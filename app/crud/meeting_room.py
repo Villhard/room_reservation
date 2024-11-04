@@ -17,6 +17,7 @@ async def create_meeting_room(
     session.add(db_room)
     await session.commit()
     await session.refresh(db_room)
+
     return db_room
 
 
@@ -28,12 +29,14 @@ async def get_room_id_by_name(
         select(MeetingRoom.id).where(MeetingRoom.name == name)
     )
     db_room_id = db_room_id.scalars().first()
+
     return db_room_id
 
 
 async def read_all_rooms_from_db(session: AsyncSession) -> list[MeetingRoom]:
     rooms = await session.execute(select(MeetingRoom))
     rooms = rooms.scalars().all()
+
     return rooms
 
 
@@ -45,6 +48,7 @@ async def get_meeting_room_by_id(
         select(MeetingRoom).where(MeetingRoom.id == room_id)
     )
     db_room = db_room.scalars().first()
+
     return db_room
 
 
@@ -63,4 +67,15 @@ async def update_meeting_room(
     session.add(db_room)
     await session.commit()
     await session.refresh(db_room)
+
+    return db_room
+
+
+async def delete_meeting_room(
+    db_room: MeetingRoom,
+    session: AsyncSession,
+):
+    await session.delete(db_room)
+    await session.commit()
+
     return db_room
