@@ -28,3 +28,9 @@ async def get_room_id_by_name(
     )
     db_room_id = db_room_id.scalars().first()
     return db_room_id
+
+
+async def read_all_rooms_from_db(session: AsyncSession) -> list[MeetingRoom]:
+    rooms = await session.execute(select(MeetingRoom))
+    rooms = rooms.scalars().all()
+    return rooms
