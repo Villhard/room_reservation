@@ -13,7 +13,6 @@ class MeetingRoomCreate(MeetingRoomBase):
 
 
 class MeetingRoomUpdate(MeetingRoomBase):
-
     @field_validator("name")
     def name_cannot_be_null(cls, name):
         if name is None:
