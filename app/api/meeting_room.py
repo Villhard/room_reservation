@@ -28,12 +28,14 @@ async def create_new_meeting_room(
 ):
     await check_name_dublicate(meeting_room.name, session)
     new_room = await create_meeting_room(meeting_room, session)
+
     return new_room
 
 
 @router.get("/", response_model=list[MeetingRoomDB], response_model_exclude_none=True)
 async def get_all_meeting_rooms(session: AsyncSession = Depends(get_async_session)):
     rooms = await read_all_rooms_from_db(session)
+
     return rooms
 
 
@@ -53,6 +55,7 @@ async def partially_update_meeting_room(
         await check_name_dublicate(obj_in.name, session)
 
     meeting_room = await update_meeting_room(meeting_room, obj_in, session)
+
     return meeting_room
 
 
@@ -67,6 +70,7 @@ async def remove_meeting_room(
 ):
     meeting_room = await get_meeting_room_or_404(meeting_room_id, session)
     await delete_meeting_room(meeting_room, session)
+
     return meeting_room
 
 
