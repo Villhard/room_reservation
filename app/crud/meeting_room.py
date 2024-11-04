@@ -41,7 +41,7 @@ async def get_meeting_room_by_id(
     room_id: int,
     session: AsyncSession,
 ) -> Optional[MeetingRoom]:
-    db_room = session.execute(
+    db_room = await session.execute(
         select(MeetingRoom).where(MeetingRoom.id == room_id)
     )
     db_room = db_room.scalars().first()
