@@ -1,14 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.db import AsyncSession, get_async_session
-from app.crud.meeting_room import (
-    create_meeting_room,
-    get_meeting_room_by_id,
-    get_room_id_by_name,
-    read_all_rooms_from_db,
-    update_meeting_room,
-    delete_meeting_room,
-)
+from app.crud.meeting_room import meeting_room_crud
 from app.schemas.meeting_room import MeetingRoomCreate, MeetingRoomDB, MeetingRoomUpdate
 
 router = APIRouter(
@@ -27,14 +20,14 @@ async def create_new_meeting_room(
     session: AsyncSession = Depends(get_async_session),
 ):
     await check_name_dublicate(meeting_room.name, session)
-    new_room = await create_meeting_room(meeting_room, session)
+    new_room = await meeting_room_crud.create(meeting_room, session)
 
     return new_room
 
 
 @router.get("/", response_model=list[MeetingRoomDB], response_model_exclude_none=True)
 async def get_all_meeting_rooms(session: AsyncSession = Depends(get_async_session)):
-    rooms = await read_all_rooms_from_db(session)
+    rooms = await meeting_room_crud.get_multi(session)
 
     return rooms
 
@@ -54,7 +47,7 @@ async def partially_update_meeting_room(
     if obj_in.name is not None:
         await check_name_dublicate(obj_in.name, session)
 
-    meeting_room = await update_meeting_room(meeting_room, obj_in, session)
+    meeting_room = await meeting_room_crud.update(meeting_room, obj_in, session)
 
     return meeting_room
 
@@ -69,13 +62,13 @@ async def remove_meeting_room(
     session: AsyncSession = Depends(get_async_session),
 ):
     meeting_room = await get_meeting_room_or_404(meeting_room_id, session)
-    await delete_meeting_room(meeting_room, session)
+    await meeting_room_crud.remove(meeting_room, session)
 
     return meeting_room
 
 
 async def check_name_dublicate(name: str, session: AsyncSession):
-    room_id = await get_room_id_by_name(name, session)
+    room_id = await meeting_room_crud.get_room_id_by_name(name, session)
     if room_id is not None:
         raise HTTPException(
             status_code=422,
@@ -84,7 +77,7 @@ async def check_name_dublicate(name: str, session: AsyncSession):
 
 
 async def get_meeting_room_or_404(meeting_room_id: int, session: AsyncSession):
-    meeting_room = await get_meeting_room_by_id(meeting_room_id, session)
+    meeting_room = await meeting_room_crud.get(meeting_room_id, session)
     if meeting_room is None:
         raise HTTPException(
             status_code=404,
