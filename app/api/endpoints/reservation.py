@@ -1,7 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.validators import check_reservation_intersections, get_meeting_room_or_404
+from app.api.validators import (
+    check_reservation_intersections,
+    get_meeting_room_or_404,
+    get_reservation_or_404,
+)
 from app.core.db import get_async_session
 from app.crud.reservation import reservation_crud
 from app.schemas.reservation import ReservationCreate, ReservationDB
@@ -33,3 +37,17 @@ async def get_all_reservations(
     reservations = await reservation_crud.get_multi(session)
 
     return reservations
+
+
+@router.delete(
+    "/{reservation_id}",
+    response_model=ReservationDB,
+)
+async def delete_reservation(
+    reservation_id: int,
+    session: AsyncSession = Depends(get_async_session),
+):
+    reservation = await get_reservation_or_404(reservation_id, session)
+    reservation = await reservation_crud.remove(reservation, session)
+
+    return reservation
