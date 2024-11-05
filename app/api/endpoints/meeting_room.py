@@ -61,6 +61,6 @@ async def remove_meeting_room(
     session: AsyncSession = Depends(get_async_session),
 ):
     meeting_room = await get_meeting_room_or_404(meeting_room_id, session)
-    await meeting_room_crud.remove(meeting_room, session)
+    meeting_room = await meeting_room_crud.remove(meeting_room, session)
 
     return meeting_room
