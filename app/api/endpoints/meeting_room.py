@@ -4,10 +4,7 @@ from app.core.db import AsyncSession, get_async_session
 from app.crud.meeting_room import meeting_room_crud
 from app.schemas.meeting_room import MeetingRoomCreate, MeetingRoomDB, MeetingRoomUpdate
 
-router = APIRouter(
-    prefix="/meeting_rooms",
-    tags=["Meeting rooms"],
-)
+router = APIRouter()
 
 
 @router.post(
