@@ -1,6 +1,7 @@
 # directories
 .venv/
 __pycache__/
+.ruff_cache/
 
 # files
 .env
