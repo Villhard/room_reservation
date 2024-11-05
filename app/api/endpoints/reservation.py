@@ -18,6 +18,6 @@ async def create_reservation(
     session: AsyncSession = Depends(get_async_session),
 ):
     await get_meeting_room_or_404(reservation.meetingroom_id, session)
-    await check_reservation_intersections(reservation.model_dump(), session)
+    await check_reservation_intersections(**reservation.model_dump(), session=session)
     new_reservation = await reservation_crud.create(reservation, session)
     return new_reservation

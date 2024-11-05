@@ -17,7 +17,7 @@ class ReservationUpdate(ReservationBase):
             )
         return from_reserve
 
-    @model_validator(skip_on_field_errors=True)
+    @model_validator(mode="after")
     def check_from_reserve_before_to_reserve(cls, reservation):
         if reservation.from_reserve > reservation.to_reserve:
             raise ValueError(
@@ -27,12 +27,12 @@ class ReservationUpdate(ReservationBase):
 
 
 class ReservationCreate(ReservationUpdate):
-    meeting_room_id: int = Field(gt=0)
+    meetingroom_id: int = Field(gt=0)
 
 
 class ReservationDB(ReservationBase):
     id: int
-    meeting_room_id: int
+    meetingroom_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
