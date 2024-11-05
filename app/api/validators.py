@@ -2,8 +2,9 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.meeting_room import meeting_room_crud
-from app.models.meeting_room import MeetingRoom
 from app.crud.reservation import reservation_crud
+from app.models.meeting_room import MeetingRoom
+from app.models.reservation import Reservation
 
 
 async def check_name_dublicate(
@@ -39,3 +40,17 @@ async def check_reservation_intersections(**kwargs):
             status_code=422,
             detail=str(reservations),
         )
+
+
+async def get_reservation_or_404(
+    reservation_id: int,
+    session: AsyncSession,
+) -> Reservation:
+    reservation = await reservation_crud.get(reservation_id, session)
+    if reservation is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Бронь не найдена",
+        )
+
+    return reservation
