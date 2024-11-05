@@ -1,7 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.endpoints.meeting_room import router as meeting_room_router
-from app.api.endpoints.reservation import router as reservation_router
+from app.api.endpoints import meeting_room_router, reservation_router
 
 main_router = APIRouter()
 main_router.include_router(meeting_room_router)
