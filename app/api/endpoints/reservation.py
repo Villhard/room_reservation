@@ -7,10 +7,10 @@ from app.api.validators import (
     get_reservation_or_404,
 )
 from app.core.db import get_async_session
-from app.crud.reservation import reservation_crud
-from app.schemas.reservation import ReservationCreate, ReservationDB, ReservationUpdate
 from app.core.user import current_user
+from app.crud.reservation import reservation_crud
 from app.models.user import User
+from app.schemas.reservation import ReservationCreate, ReservationDB, ReservationUpdate
 
 router = APIRouter()
 
@@ -75,3 +75,18 @@ async def update_reservation(
     reservation = await reservation_crud.update(reservation, obj_in, session)
 
     return reservation
+
+
+@router.get(
+    "/my_reservations",
+    response_model=list[ReservationDB],
+)
+async def get_my_reservations(
+    session: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_user),
+):
+    reservations = await reservation_crud.get_by_user(
+        user_id=user.id, session=session
+    )
+
+    return reservations
