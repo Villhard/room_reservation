@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.validators import check_name_dublicate, get_meeting_room_or_404
 from app.core.db import get_async_session
+from app.core.user import current_superuser
 from app.crud.meeting_room import meeting_room_crud
 from app.crud.reservation import reservation_crud
 from app.schemas.meeting_room import MeetingRoomCreate, MeetingRoomDB, MeetingRoomUpdate
@@ -15,6 +16,7 @@ router = APIRouter()
     "/",
     response_model=MeetingRoomDB,
     response_model_exclude_none=True,
+    dependencies=[Depends(current_superuser)],
 )
 async def create_new_meeting_room(
     meeting_room: MeetingRoomCreate,
@@ -26,7 +28,12 @@ async def create_new_meeting_room(
     return new_room
 
 
-@router.get("/", response_model=list[MeetingRoomDB], response_model_exclude_none=True)
+@router.get(
+    "/",
+    response_model=list[MeetingRoomDB],
+    response_model_exclude_none=True,
+    dependencies=[Depends(current_superuser)],
+)
 async def get_all_meeting_rooms(session: AsyncSession = Depends(get_async_session)):
     rooms = await meeting_room_crud.get_multi(session)
 
@@ -37,6 +44,7 @@ async def get_all_meeting_rooms(session: AsyncSession = Depends(get_async_sessio
     "/{meeting_room_id}",
     response_model=MeetingRoomDB,
     response_model_exclude_none=True,
+    dependencies=[Depends(current_superuser)],
 )
 async def partially_update_meeting_room(
     meeting_room_id: int,
@@ -57,6 +65,7 @@ async def partially_update_meeting_room(
     "/{meeting_room_id}",
     response_model=MeetingRoomDB,
     response_model_exclude_none=True,
+    dependencies=[Depends(current_superuser)],
 )
 async def remove_meeting_room(
     meeting_room_id: int,
