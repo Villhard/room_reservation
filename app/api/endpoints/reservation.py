@@ -7,7 +7,7 @@ from app.api.validators import (
     get_reservation_after_validation_or_403,
 )
 from app.core.db import get_async_session
-from app.core.user import current_user
+from app.core.user import current_user, current_superuser
 from app.crud.reservation import reservation_crud
 from app.models.user import User
 from app.schemas.reservation import ReservationCreate, ReservationDB, ReservationUpdate
@@ -33,6 +33,7 @@ async def create_reservation(
 @router.get(
     "/",
     response_model=list[ReservationDB],
+    dependencies=[Depends(current_superuser)],
 )
 async def get_all_reservations(
     session: AsyncSession = Depends(get_async_session),
